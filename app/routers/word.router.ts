@@ -1,8 +1,5 @@
 import {Router} from 'express';
-import {ExampleController} from '../controllers/example.controller';
 import {ApiRoutes} from '../enums/api-routes.enum';
-import {ExampleDal} from '../dals/example.dal';
-import {ExampleService} from '../services/example.service';
 import { WordDal } from "../dals/word.dal";
 import { WordService } from "../services/word.service";
 import { WordController } from "../controllers/word.controller";

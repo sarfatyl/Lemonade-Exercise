@@ -6,8 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run local",
-    "local": "NODE_ENV=local ts-node-dev --respawn --transpileOnly ./app/server.ts",
-    "test": "jest --maxWorkers=10 -c jest.config.js --verbose",
+    "local": "NODE_ENV=localhost ts-node-dev --respawn --transpileOnly ./app/server.ts",
     "e2e": "jest -c jest.config.e2e.js"
   },
   "author": "Linoy Tzarfaty",
