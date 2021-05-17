@@ -34,6 +34,8 @@ export class WordController {
 					break;
 				case InputTypeEnum.Url:
 					const url: string = req.body.data;
+					// I do not use await to return an immediate response to the client
+					// and continue the calculation behind the scenes
 					this.wordService.countWordsFromUrl(url);
 					break;
 			}

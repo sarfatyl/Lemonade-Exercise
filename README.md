@@ -29,7 +29,7 @@ File path
     url: localhost:9101/word/counter
     body(row - JSON): {
         "inputType": "filePath",
-        "data": "example-file.txt"
+        "data": "assets/example-file.txt"
     }
 Text
     
@@ -47,3 +47,37 @@ Text
     Query: 
         word: "Lorem"
 
+# Assumptions
+
+   Due to the lack of time I assume that the number of repetitive words are many and it is possible 
+   to read the entire file where we store the words-count
+   If I had time I would look up the words in the buffer and not read the file once
+
+
+
+# Algorithm
+
+   When we need to read a file you typically read a chunk of bytes called "buffer" to avoid multiple calls to the underlying I/O layer,
+   so instead of reading directly from the disk, we read from the previous filled buffer. 
+   By doing this we win performance.
+   
+   I chose the library : buffered-reader that allows you to read files without worry about the buffers.
+   There are two ways to read the files. The first can only read binary data and has a pointer to move along the file (seek, skip, read). 
+   The second performs a read from the beginning to the end of the file and emits different events (byte, character, line, buffer...).
+   I chose the second approach.
+   
+   I decided to read the file line by line in from the buffer to avoid cutting lines at the end of the chunk
+   and save the word counts on file for caching the results (the number of appearances of each word) will be persisted between runs,
+   and save the word counts on file for caching the results (the number of appearances of each word) will be persisted between runs,
+   to be used by the 'word statistics' service.
+   if we shut down the server and restart it, results will be saved on the 'words' file 
+
+# Improvements if I had more time
+   0. I would look up the words in the buffer and not read the file once on the constructor.
+   1. Upload ms to cloud like aws (add docker file)
+   2. Save the intermediate results to s3 and not to a file that is restricted in memory
+      (Amazon Simple Storage Service (Amazon S3) is storage for the Internet. 
+      It is designed to make web-scale computing easier for developers.)
+   3. Saves the results of the getCleanWord function in a map to create dynamic programming 
+      and not to recalculate the results each time.
+   4. Write e2e, unit, integration tests.

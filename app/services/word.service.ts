@@ -1,6 +1,10 @@
 import { WordDal } from "../dals/word.dal";
-import fs from "fs";
-import * as http from "http";
+import * as https from "https";
+import {LemonadeError} from "../utils/error-handling";
+import {InternalServerError} from "../consts/errors.const";
+import reader from "buffered-reader";
+
+const DataReader = reader.DataReader;
 
 
 export class WordService {
@@ -32,19 +36,25 @@ export class WordService {
 	}
 
 	private getCleanWord(word: string) {
-		word = word.toLowerCase().replace(/[\,0-9\-\n\r.]/g, '');
+		word = word.toLowerCase().replace(/[\,0-9\?/\n\r.]/g, '');
 		return word;
 	}
 
 	countWordsFromFile(fileUrl: string): void {
-		const readStream = fs.createReadStream(fileUrl);
-		readStream.on('data', (chunk) => {
-			this.countWords(chunk.toString('utf8'));
-		});
+		new DataReader (fileUrl, { encoding: "utf8" })
+			.on ("error", function (error){
+				throw new LemonadeError(InternalServerError, error);
+			})
+			.on ("line",  (line) => {
+				this.countWords(line)
+			})
+			.on ("end", function (){
+			})
+			.read ();
 	}
 
 	async countWordsFromUrl(url: string): Promise<void> {
-		http.get(url, response => {
+		https.get(url, response => {
 			response.on("data", (chunk => {
 				this.countWords(chunk.toString('utf8'));
 			}));

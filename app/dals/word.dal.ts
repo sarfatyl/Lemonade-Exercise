@@ -1,8 +1,9 @@
 import fs from 'fs';
+const fsp = require('fs').promises;
 
 export class WordDal {
 
-	fileName: string = 'words.json';
+	fileName: string = 'assets/words-count.json';
 	words: Map<string, number>;
 
 	constructor() {
@@ -22,12 +23,17 @@ export class WordDal {
 				this.words.set(key, 1);
 			}
 		}
+		// save the words counts to cache
 		this.saveFile();
 	}
 
-	private saveFile() {
+	private async saveFile() {
+		/** The regular version of fs.writeFile() does not return a promise and thus the await does nothing.
+		await only does something useful if you are awaiting a promise.
+		The latest versions of node.js have promise support for the fs module. You can do so like this:
+		 **/
 		// @ts-ignore
-		fs.writeFileSync(this.fileName, JSON.stringify(Object.fromEntries(this.words)));
+		await fsp.writeFile(this.fileName, JSON.stringify(Object.fromEntries(this.words)));
 	}
 
 	getWordCount(word: string) {
