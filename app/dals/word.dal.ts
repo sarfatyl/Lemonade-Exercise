@@ -3,6 +3,7 @@ const fsp = require('fs').promises;
 
 export class WordDal {
 
+	/** The file for caching our words count **/
 	fileName: string = 'assets/words-count.json';
 	words: Map<string, number>;
 
@@ -20,10 +21,10 @@ export class WordDal {
 			if (this.words.has(key)) {
 				this.words.set(key, this.words.get(key) + value);
 			} else {
-				this.words.set(key, 1);
+				this.words.set(key, value);
 			}
 		}
-		// save the words counts to cache
+		/** Save the words counts to cache **/
 		this.saveFile();
 	}
 

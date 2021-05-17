@@ -7,10 +7,10 @@ describe("WordController", () => {
 
     describe("getStatistics" , () => {
 
-        test("Should return the version of the micro service.", async (done) => {
-            const result = await request(app).get(ApiRoutes.Word + ApiRoutes.Statistics);
+        test("Should return the the number of linoy occurrence.", async (done) => {
+            const result = await request(app).get(ApiRoutes.Word + ApiRoutes.Statistics).query({word: 'linoy'});
             expect(result.status).toEqual(ResponseStatusCodes.Ok);
-            // expect(result.text).toEqual(pjson.version);
+            expect(result.text).toContain('3');
             done();
         });
 
