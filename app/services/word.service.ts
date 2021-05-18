@@ -3,6 +3,7 @@ import * as https from "https";
 import {LemonadeError} from "../utils/error-handling";
 import {InternalServerError} from "../consts/errors.const";
 import reader from "buffered-reader";
+import fs from "fs";
 
 const DataReader = reader.DataReader;
 
@@ -41,6 +42,10 @@ export class WordService {
 	}
 
 	countWordsFromFile(fileUrl: string): void {
+		/**
+		 *  When we need to read a file you typically read a chunk of bytes called "buffer" to avoid multiple calls to the underlying I/O layer,
+		 	so instead of reading directly from the disk, we read from the previous filled buffer.
+		 */
 		new DataReader (fileUrl, { encoding: "utf8" })
 			.on ("error", function (error){
 				throw new LemonadeError(InternalServerError, error);
@@ -53,10 +58,15 @@ export class WordService {
 	}
 
 	async countWordsFromUrl(url: string): Promise<void> {
+		// https.get(url, response => {
+		// 	response.on("data", (chunk => {
+		// 		this.countWords(chunk.toString('utf8'));
+		// 	}));
+		// });
+		let tempFile = 'tempFile.txt'
 		https.get(url, response => {
-			response.on("data", (chunk => {
-				this.countWords(chunk.toString('utf8'));
-			}));
+				response.pipe(fs.createWriteStream(tempFile, { "flags": 'a' }));
+				this.countWordsFromFile(tempFile);
 		});
 	}
 

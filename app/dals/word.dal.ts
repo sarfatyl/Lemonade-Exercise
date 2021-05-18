@@ -31,7 +31,7 @@ export class WordDal {
 	}
 
 	private saveFile() {
-		/** We can write a file in a non-blocking asynchronous way **/
+		/** With writeFile function we can write a file in a non-blocking asynchronous way **/
 		// @ts-ignore
 		fs.writeFile(this.fileName, JSON.stringify(Object.fromEntries(this.words)),  (err) => {
 			if (err) {

@@ -58,6 +58,7 @@ Text
 # Algorithm
     I chose Object-oriented programming (OOP) for my project with the concept of classes and objects. It is used to structure a software program into simple,
     reusable pieces of code blueprints
+
     
     When we need to read a file you typically read a chunk of bytes called "buffer" to avoid multiple calls to the underlying I/O layer,
     so instead of reading directly from the disk, we read from the previous filled buffer. 
@@ -69,8 +70,7 @@ Text
     I chose the second approach.
    
     I decided to read the file line by line in from the buffer to avoid cutting lines at the end of the chunk
-    and save the word counts on file for caching the results (the number of appearances of each word) will be persisted between runs,
-    and save the word counts on file for caching the results (the number of appearances of each word) will be persisted between runs,
+    and save the word counts on file for storing the results (the number of appearances of each word) will be persisted between runs,
     to be used by the 'word statistics' service.
     if we shut down the server and restart it, results will be saved on the 'words' file 
 
