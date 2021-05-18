@@ -49,9 +49,9 @@ Text
 
 # Assumptions
 
-   Due to the lack of time I assume that the number of repetitive words are many and it is possible 
-   to read the entire file where we store the words-count
-   If I had time I would look up the words in the buffer and not read the file once
+      Due to the lack of time I assume that the number of repetitive words are many and it is possible 
+      to read the entire file where we store the words-count
+      If I had time I would look up the words in the buffer and not read the file once
 
 
 
