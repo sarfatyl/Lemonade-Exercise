@@ -10,7 +10,7 @@ describe("WordController", () => {
         test("Should return the the number of linoy occurrence.", async (done) => {
             const result = await request(app).get(ApiRoutes.Word + ApiRoutes.Statistics).query({word: 'linoy'});
             expect(result.status).toEqual(ResponseStatusCodes.Ok);
-            expect(result.text).toContain('0');
+            expect(result.text).toContain('3');
             done();
         });
 

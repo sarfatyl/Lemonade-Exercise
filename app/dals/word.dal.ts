@@ -1,4 +1,6 @@
 import fs from 'fs';
+import {LemonadeError} from "../utils/error-handling";
+import {InternalServerError} from "../consts/errors.const";
 const fsp = require('fs').promises;
 
 export class WordDal {
@@ -28,13 +30,17 @@ export class WordDal {
 		await this.saveFile();
 	}
 
-	private async saveFile() {
+	private saveFile() {
 		/** The regular version of fs.writeFile() does not return a promise and thus the await does nothing.
 		await only does something useful if you are awaiting a promise.
 		The latest versions of node.js have promise support for the fs module. You can do so like this:
 		 **/
 		// @ts-ignore
-		await fsp.writeFile(this.fileName, JSON.stringify(Object.fromEntries(this.words)));
+		fs.writeFile(this.fileName, JSON.stringify(Object.fromEntries(this.words)),  (err) => {
+			if (err) {
+				throw new LemonadeError(InternalServerError, err);
+			}
+		});
 	}
 
 	getWordCount(word: string) {
