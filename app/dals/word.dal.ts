@@ -31,10 +31,7 @@ export class WordDal {
 	}
 
 	private saveFile() {
-		/** The regular version of fs.writeFile() does not return a promise and thus the await does nothing.
-		await only does something useful if you are awaiting a promise.
-		The latest versions of node.js have promise support for the fs module. You can do so like this:
-		 **/
+		/** We can write a file in a non-blocking asynchronous way **/
 		// @ts-ignore
 		fs.writeFile(this.fileName, JSON.stringify(Object.fromEntries(this.words)),  (err) => {
 			if (err) {
