@@ -1,7 +1,6 @@
 import fs from 'fs';
 import {LemonadeError} from "../utils/error-handling";
 import {InternalServerError} from "../consts/errors.const";
-const fsp = require('fs').promises;
 
 export class WordDal {
 

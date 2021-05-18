@@ -1,11 +1,8 @@
-import { WordDal } from "../dals/word.dal";
+import {WordDal} from "../dals/word.dal";
 import * as https from "https";
 import {LemonadeError} from "../utils/error-handling";
 import {InternalServerError} from "../consts/errors.const";
-import reader from "buffered-reader";
 import fs from "fs";
-
-const DataReader = reader.DataReader;
 
 
 export class WordService {
@@ -17,14 +14,17 @@ export class WordService {
 
 	async countWords(text: string): Promise<void> {
 		const wordCounts = new Map<string, number>();
-		const words = text.split(' ');
-		for (let word of words) {
-			word = this.getCleanWord(word);
-			if (word) {
-				if (wordCounts.has(word)) {
-					wordCounts.set(word, wordCounts.get(word) + 1);
-				} else {
-					wordCounts.set(word, 1);
+		const rows = text.split(/\r?\n/);
+		for (let row of rows) {
+			const words = row.split(' ');
+			for (let word of words) {
+				word = this.getCleanWord(word);
+				if (word) {
+					if (wordCounts.has(word)) {
+						wordCounts.set(word, wordCounts.get(word) + 1);
+					} else {
+						wordCounts.set(word, 1);
+					}
 				}
 			}
 		}
@@ -36,38 +36,38 @@ export class WordService {
 		return this.wordDal.getWordCount(word);
 	}
 
-	private getCleanWord(word: string) {
-		word = word.toLowerCase().replace(/[\,0-9\?/\n\r.]/g, '');
-		return word;
-	}
-
 	countWordsFromFile(fileUrl: string): void {
-		/**
-		 *  When we need to read a file you typically read a chunk of bytes called "buffer" to avoid multiple calls to the underlying I/O layer,
-		 	so instead of reading directly from the disk, we read from the previous filled buffer.
-		 */
-		new DataReader (fileUrl, { encoding: "utf8" })
-			.on ("error", function (error){
-				throw new LemonadeError(InternalServerError, error);
-			})
-			.on ("line", async (line) => {
-				await this.countWords(line)
-			})
-			.on ("end", function (){})
-			.read ();
+		const readStream = fs.createReadStream(fileUrl);
+		this.parseStream(readStream);
+
 	}
 
 	async countWordsFromUrl(url: string): Promise<void> {
-		// https.get(url, response => {
-		// 	response.on("data", (chunk => {
-		// 		this.countWords(chunk.toString('utf8'));
-		// 	}));
-		// });
-		let tempFile = 'tempFile.txt'
-		https.get(url, response => {
-				response.pipe(fs.createWriteStream(tempFile, { "flags": 'a' }));
-				this.countWordsFromFile(tempFile);
+		https.get(url, (res) => {
+			this.parseStream(res);
 		});
 	}
 
+	parseStream(readStream) {
+		let lastWordFromPreviousChunk: string = '';
+		readStream.on('data', async (chunk) => {
+			let text = lastWordFromPreviousChunk + chunk.toString('utf8');
+			let splitIndex: number = text.lastIndexOf(' ');
+			let firstPart: string = text.substring(0, splitIndex);
+			let secondPart: string = text.substring(splitIndex);
+			await this.countWords(firstPart);
+			lastWordFromPreviousChunk = secondPart;
+		});
+		readStream.on('end', async () => {
+			await this.countWords(lastWordFromPreviousChunk);
+		});
+		readStream.on('error', async (error) => {
+			throw new LemonadeError(InternalServerError, error);
+		});
+	}
+
+	private getCleanWord(word: string) {
+		word = word.toLowerCase().replace(/[\,0-9\?/.]/g, '');
+		return word;
+	}
 }
