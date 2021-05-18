@@ -1,12 +1,16 @@
 import {ResponseStatusCodes} from '../enums/response-status-codes.enum';
 import {ILemonadeError} from '../interfaces/lemonade-error.interface';
 
+export const  FileOrUrlNotFound: ILemonadeError = {
+	statusCode: ResponseStatusCodes.BadRequest,
+	name: 'FileNotFound',
+	message: 'File or Url Not Found.'
+};
 export const InternalServerError: ILemonadeError = {
 	statusCode: ResponseStatusCodes.InternalServerError,
 	name: 'InternalServerError',
 	message: 'Internal server error.'
 };
-
 export const InvalidInputType: ILemonadeError = {
 	statusCode: ResponseStatusCodes.BadRequest,
 	name: 'InvalidInputType',

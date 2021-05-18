@@ -11,8 +11,7 @@ export class WordController {
 	constructor(
 		private wordDal: WordDal,
 		private wordService: WordService
-	) {
-	}
+	) {}
 
 	counter = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
@@ -26,6 +25,8 @@ export class WordController {
 			switch (inputType) {
 				case InputTypeEnum.Text:
 					const text = req.body.data;
+					/** I do not use await to return an immediate response to the client
+					 and continue the calculation behind the scenes **/
 					this.wordService.countWords(text);
 					break;
 				case InputTypeEnum.FilePath:
@@ -34,8 +35,8 @@ export class WordController {
 					break;
 				case InputTypeEnum.Url:
 					const url: string = req.body.data;
-					// I do not use await to return an immediate response to the client
-					// and continue the calculation behind the scenes
+					/** I do not use await to return an immediate response to the client
+					and continue the calculation behind the scenes **/
 					this.wordService.countWordsFromUrl(url);
 					break;
 			}

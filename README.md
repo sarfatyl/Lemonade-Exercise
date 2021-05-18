@@ -46,40 +46,44 @@ Text
     url: localhost:9101/word/statistics
     Query: 
         word: "Lorem"
+# Tests
+
+    I wrote an infrastructure for writing e2e tests
+    You can run the tests by command: npm run e2e
+    Unfortunately I did not have time to finish writing all the tests
 
 # Assumptions
 
-      Due to the lack of time I assume that the number of repetitive words are many and it is possible 
-      to read the entire file where we store the words-count
+    * Input type (string, url, file name) send as a parameter in the request (query params)
+    * Due to the lack of time I assume that the number of repetitive words are large and it is possible 
+      to read the file where we store the words-count to project memory
       If I had time I would look up the words in the buffer and not read the file once
-
-
+    * I cleared dots and commas from the words.
 
 # Algorithm
-    I chose Object-oriented programming (OOP) for my project with the concept of classes and objects. It is used to structure a software program into simple,
-    reusable pieces of code blueprints
 
+    I chose Object-oriented programming (OOP) for my project with the concept of classes(Routers, controllers, services) and objects. 
+    It is used to structure a software program into simple, reusable pieces of code blueprints.
     
     When we need to read a file you typically read a chunk of bytes called "buffer" to avoid multiple calls to the underlying I/O layer,
     so instead of reading directly from the disk, we read from the previous filled buffer. 
     By doing this we win performance.
-   
-    I chose the library : buffered-reader that allows you to read files without worry about the buffers.
-    There are two ways to read the files. The first can only read binary data and has a pointer to move along the file (seek, skip, read). 
-    The second performs a read from the beginning to the end of the file and emits different events (byte, character, line, buffer...).
-    I chose the second approach.
-   
-    I decided to read the file line by line in from the buffer to avoid cutting lines at the end of the chunk
-    and save the word counts on file for storing the results (the number of appearances of each word) will be persisted between runs,
+    I save the word counts on file(assets/words-count.json) for storing the results (the number of appearances of each word) will be persisted between runs,
     to be used by the 'word statistics' service.
+    In addition, in each iteration (chunk) I did not analyze the last word to avoid cutting words at the end of the chunk,
+    I added that word to the next chunk.
     if we shut down the server and restart it, results will be saved on the 'words' file 
+    * I wrote bash script(big-file.sh) to create file > 1GB for self test
 
 # Improvements if I had more time
-    0. I would look up the words in the buffer and not read the file once on the constructor.
-    1. Upload ms to cloud like aws (add docker file)
-    2. Save the intermediate results to s3 and not to a file that is restricted in memory
-      (Amazon Simple Storage Service (Amazon S3) is storage for the Internet. 
-      It is designed to make web-scale computing easier for developers.)
+
+    0. I would look up the words-counts in the buffer and not read the file once on the constructor -
+    I would index the file that contains the number of repetitions of the words and according to that pull it out in each iteration, 
+    or save the words in files by letters (each letter in a different file)
+    1. Upload the MS to cloud like AWS (add docker file)
+    2. Save the intermediate results to S3 and not to a file that is restricted in memory
+       S3 - Amazon Simple Storage Service is storage for the Internet. 
+       It is designed to make web-scale computing easier for developers.
     3. Saves the results of the getCleanWord function in a map to create dynamic programming 
-      and not to recalculate the results each time.
+       and not to recalculate the results each time.
     4. Write e2e, unit, integration tests.

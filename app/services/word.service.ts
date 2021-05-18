@@ -1,7 +1,7 @@
 import {WordDal} from "../dals/word.dal";
 import * as https from "https";
 import {LemonadeError} from "../utils/error-handling";
-import {InternalServerError} from "../consts/errors.const";
+import {FileOrUrlNotFound, InternalServerError} from "../consts/errors.const";
 import fs from "fs";
 
 
@@ -48,9 +48,9 @@ export class WordService {
 		});
 	}
 
-	parseStream(readStream) {
+	parseStream(stream) {
 		let lastWordFromPreviousChunk: string = '';
-		readStream.on('data', async (chunk) => {
+		stream.on('data', async (chunk) => {
 			let text = lastWordFromPreviousChunk + chunk.toString('utf8');
 			let splitIndex: number = text.lastIndexOf(' ');
 			let firstPart: string = text.substring(0, splitIndex);
@@ -58,16 +58,16 @@ export class WordService {
 			await this.countWords(firstPart);
 			lastWordFromPreviousChunk = secondPart;
 		});
-		readStream.on('end', async () => {
+		stream.on('end', async () => {
 			await this.countWords(lastWordFromPreviousChunk);
 		});
-		readStream.on('error', async (error) => {
-			throw new LemonadeError(InternalServerError, error);
+		stream.on('error', async (error) => {
+			throw new LemonadeError(FileOrUrlNotFound, error);
 		});
 	}
 
 	private getCleanWord(word: string) {
-		word = word.toLowerCase().replace(/[\,0-9\?/.]/g, '');
+		word = word.toLowerCase().replace(/[0-9/./,]/g, '');
 		return word;
 	}
 }
