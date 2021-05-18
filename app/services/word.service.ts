@@ -14,7 +14,7 @@ export class WordService {
 	) {
 	}
 
-	countWords(text: string): void {
+	async countWords(text: string): Promise<void> {
 		const wordCounts = new Map<string, number>();
 		const words = text.split(' ');
 		for (let word of words) {
@@ -27,7 +27,7 @@ export class WordService {
 				}
 			}
 		}
-		this.wordDal.addWords(wordCounts);
+		await this.wordDal.addWords(wordCounts);
 	}
 
 	getWordStatistic(word: string): number {
@@ -45,11 +45,10 @@ export class WordService {
 			.on ("error", function (error){
 				throw new LemonadeError(InternalServerError, error);
 			})
-			.on ("line",  (line) => {
-				this.countWords(line)
+			.on ("line", async (line) => {
+				await this.countWords(line)
 			})
-			.on ("end", function (){
-			})
+			.on ("end", function (){})
 			.read ();
 	}
 

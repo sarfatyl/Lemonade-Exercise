@@ -13,10 +13,10 @@ export class WordDal {
 			this.saveFile();
 		}
 		/** We use sync to make sure the file is ready before any request. */
-		this.words = new Map(Object.entries(JSON.parse(fs.readFileSync(this.fileName,'utf8'))));
+		this.words = new Map(Object.entries(JSON.parse(fs.readFileSync(this.fileName, 'utf8'))));
 	}
 
-	addWords(wordCounts: Map<string, number>): void {
+	async addWords(wordCounts: Map<string, number>): Promise<void> {
 		for (const [key, value] of wordCounts.entries()) {
 			if (this.words.has(key)) {
 				this.words.set(key, this.words.get(key) + value);
@@ -25,7 +25,7 @@ export class WordDal {
 			}
 		}
 		/** Save the words counts to cache **/
-		this.saveFile();
+		await this.saveFile();
 	}
 
 	private async saveFile() {
