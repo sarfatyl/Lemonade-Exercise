@@ -25,9 +25,7 @@ export class WordController {
 			switch (inputType) {
 				case InputTypeEnum.Text:
 					const text = req.body.data;
-					/** I do not use await to return an immediate response to the client
-					 and continue the calculation behind the scenes **/
-					this.wordService.countWords(text);
+					await this.wordService.countWords(text);
 					break;
 				case InputTypeEnum.FilePath:
 					const fileUrl: string = req.body.data;
@@ -35,9 +33,7 @@ export class WordController {
 					break;
 				case InputTypeEnum.Url:
 					const url: string = req.body.data;
-					/** I do not use await to return an immediate response to the client
-					and continue the calculation behind the scenes **/
-					this.wordService.countWordsFromUrl(url);
+					await this.wordService.countWordsFromUrl(url);
 					break;
 			}
 			res.status(ResponseStatusCodes.Ok).send();
